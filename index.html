@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جی‌بی اپ | GBApp (Google Play Style)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1f1f1f;
+            --panel-bg: #1f1f1f;
+            --card-bg: #2d2d2d;
+            --text-color: #e3e3e3;
+            --text-sub: #9e9e9e;
+            --accent-green: #01875f;
+            --font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+            --font-size: 0.95rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: var(--font-family);
+            font-size: var(--font-size);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px; /* شبیه‌سازی قاب موبایل */
+            min-height: 100vh;
+            background-color: var(--panel-bg);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 90px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* --- نوار جستجوی بالا (Google Play Header) --- */
+        .gp-header {
+            position: sticky;
+            top: 0;
+            background-color: #1f1f1f;
+            z-index: 100;
+            padding: 10px 16px 5px 16px;
+        }
+
+        .gp-search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #2d2d2d;
+            border-radius: 28px;
+            padding: 8px 16px;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .gp-search-bar i {
+            color: var(--text-sub);
+            font-size: 1.1rem;
+        }
+
+        .gp-search-bar input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-color);
+            font-size: 0.95rem;
+        }
+
+        .gp-profile-btn {
+            background: #01875f;
+            color: #fff;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* --- تب‌های بالای گوگل پلی --- */
+        .gp-tabs {
+            display: flex;
+            border-bottom: 1px solid #333;
+            margin-top: 10px;
+            background-color: #1f1f1f;
+        }
+
+        .gp-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            color: var(--text-sub);
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .gp-tab.active {
+            color: var(--accent-green);
+        }
+
+        .gp-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background-color: var(--accent-green);
+            border-radius: 3px 3px 0 0;
+        }
+
+        /* --- محتوای صفحات --- */
+        .page {
+            display: none;
+            flex-direction: column;
+            padding: 15px;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- بخش‌های برنامه‌ها (Sections & Cards) --- */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0 10px 0;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .section-more {
+            color: var(--accent-green);
+            font-size: 0.85rem;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .horizontal-scroll {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .horizontal-scroll::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        /* کارت برنامه شبیه گوگل پلی */
+        .app-card {
+            display: flex;
+            flex-direction: column;
+            width: 95px;
+            flex-shrink: 0;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+            background: transparent;
+            border: none;
+            text-align: right;
+        }
+
+        .app-icon {
+            width: 95px;
+            height: 95px;
+            border-radius: 20%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            color: #fff;
+            position: relative;
+        }
+
+        .app-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+        }
+
+        .app-meta {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* لیست عمودی برنامه‌ها (برای بخش‌های خاص) */
+        .app-list-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .app-item-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: var(--card-bg);
+            padding: 10px 14px;
+            border-radius: 16px;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+            text-align: right;
+            width: 100%;
+        }
+
+        .app-item-row .app-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            font-size: 1.4rem;
+            margin-bottom: 0;
+        }
+
+        .app-item-info {
+            flex: 1;
+        }
+
+        .app-item-info .title {
+            font-size: 0.95rem;
+            font-weight: bold;
+        }
+        .app-item-info .sub {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+        }
+
+        /* --- استایل شبکه‌ای دسته‌بندی‌ها --- */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .category-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            border: 1px solid #3d3d3d;
+            transition: background 0.2s;
+        }
+
+        .category-card:hover {
+            background-color: #383838;
+        }
+
+        .category-card i {
+            font-size: 1.5rem;
+            color: var(--accent-green);
+        }
+
+        /* --- دکمه‌های بازگشت --- */
+        .btn-back-gp {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #2d2d2d;
+            color: var(--text-color);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        /* آیکون‌های رنگی اختصاصی برنامه */
+        .bg-iran { background: linear-gradient(135deg, #22c55e, #ef4444); }
+        .bg-foreign { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .bg-paid { background: linear-gradient(135deg, #f59e0b, #b45309); }
+        .bg-ai { background: linear-gradient(135deg, #0284c7, #6366f1); }
+        .bg-google { background: linear-gradient(135deg, #ea4335, #4285f4); }
+        .bg-fun { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .bg-tools { background: linear-gradient(135deg, #10b981, #059669); }
+        .bg-music { background: linear-gradient(135deg, #d946ef, #8b5cf6); }
+        .bg-tv { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        .btn-irancell { background-color: #ffcc00; color: #000; }
+        .btn-hamrahman { background-color: #0077cc; }
+        .btn-divar { background-color: #a62626; }
+        .btn-digikala { background-color: #ef394e; }
+        .btn-instagram { background: linear-gradient(45deg, #f09433, #dc2743, #bc1888); }
+        .btn-youtube { background-color: #ff0000; }
+        .btn-telegram { background-color: #24a1de; }
+        .btn-rubika { background: linear-gradient(45deg, #7c3aed, #f97316); }
+        .btn-bale { background-color: #059669; }
+        .btn-milli { background-color: #d97706; }
+        .btn-mario { background: linear-gradient(45deg, #dc2626, #2563eb); }
+        .btn-pornhub { background-color: #000; border: 1px solid #ffa31a; }
+        .btn-xvideos { background-color: #c41c1c; }
+        .btn-techtube { background-color: #111827; border: 1px solid #ec4899; }
+        .btn-shahvani { background-color: #7f1d1d; }
+
+        /* --- ماشین حساب و ابزارها --- */
+        .calc-display {
+            width: 100%;
+            height: 55px;
+            background-color: #121212;
+            color: #fff;
+            font-size: 1.5rem;
+            text-align: left;
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            margin-bottom: 12px;
+            direction: ltr;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .calc-btn {
+            padding: 14px;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            border: none;
+            background-color: #2d2d2d;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .calc-btn.op { background-color: var(--accent-green); }
+        .calc-btn.sci { background-color: #7c3aed; }
+        .calc-btn.eq { background-color: #3b82f6; grid-column: span 2; }
+        .calc-btn.clear { background-color: #ef4444; }
+
+        .search-input-box {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #444;
+            background-color: #121212;
+            color: white;
+            outline: none;
+            margin-bottom: 10px;
+        }
+
+        /* --- چراغ قوه --- */
+        .flashlight-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            gap: 20px;
+        }
+        .flashlight-icon {
+            font-size: 4rem;
+            color: #555;
+            transition: color 0.3s;
+        }
+        .flashlight-icon.on {
+            color: #facc15;
+            text-shadow: 0 0 25px #facc15;
+        }
+
+        /* --- بازی ماریو --- */
+        .mario-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .mario-hud {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-green);
+            background: #121212;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        canvas#marioCanvas {
+            background: linear-gradient(to bottom, #5c94fc 0%, #5c94fc 70%, #d88000 70%, #d88000 100%);
+            border: 2px solid #444;
+            border-radius: 8px;
+            max-width: 100%;
+        }
+        .mario-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .mario-ctrl-btn {
+            background-color: #2d2d2d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            width: 65px;
+            height: 45px;
+            font-size: 1rem;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- منوی تنظیمات (Drawer) --- */
+        .settings-drawer {
+            position: fixed;
+            top: 0;
+            right: -320px;
+            width: 300px;
+            height: 100%;
+            background: #1f1f1f;
+            z-index: 1000;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.8);
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-left: 1px solid #333;
+            overflow-y: auto;
+        }
+        .settings-drawer.open { right: 0; }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        .setting-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .setting-group select, .setting-group input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #2d2d2d;
+            color: #fff;
+        }
+
+        /* --- پاپ‌آپ رمز عبور --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: #2d2d2d;
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+        .modal-card input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #444;
+            background: #121212;
+            color: white;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        .modal-btns { display: flex; gap: 10px; }
+        .modal-btn {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .modal-btn.confirm { background: var(--accent-green); color: white; }
+        .modal-btn.cancel { background: #444; color: white; }
+
+        /* --- لودینگ "لطفا صبر کنید..." --- */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.75);
+            z-index: 3000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            color: #fff;
+        }
+        .loading-overlay.active { display: flex; }
+        .spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top: 4px solid var(--accent-green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- متن متحرک پایین صفحه (Marquee) --- */
+        .marquee-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #111111;
+            color: #facc15;
+            border-top: 1px solid #333;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 6px 0;
+            z-index: 999;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .marquee-content {
+            display: inline-block;
+            padding-right: 100%;
+            animation: marquee 14s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* --- ابزار ادیت عکس --- */
+        .photo-editor-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            background: #121212;
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid #333;
+        }
+        .preview-canvas-container {
+            width: 100%;
+            max-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px dashed #444;
+        }
+        #photoCanvas {
+            max-width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            width: 100%;
+        }
+        .filter-btn {
+            background: #2d2d2d;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 4px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-align: center;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- پس‌زمینه انیمیشنی (اختیاری) -->
+    <div id="animatedBg"></div>
+
+    <!-- لودینگ عمومی "لطفا صبر کنید..." -->
+    <div id="globalLoading" class="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-size: 1rem; font-weight: bold;">لطفا صبر کنید...</div>
+    </div>
+
+    <!-- متن متحرک پایین صفحه -->
+    <div class="marquee-footer">
+        <div class="marquee-content">
+            برای رفتن به سایت‌های ایرانی فیلترشکن خود را خاموش کنید
+        </div>
+    </div>
+
+    <!-- منوی تنظیمات کشویی -->
+    <div id="settingsDrawer" class="settings-drawer">
+        <div class="drawer-header">
+            <h3 id="txtSettingsTitle">تنظیمات</h3>
+            <button onclick="toggleSettingsMenu()" style="background:none; border:none; color:#fff; font-size:1.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="setting-group">
+            <label id="txtFontSize">اندازه فونت</label>
+            <input type="range" id="fontSizeRange" min="12" max="20" value="15" onchange="changeFontSize(this.value)">
+        </div>
+        <div class="setting-group">
+            <label id="txtFontFamily">انتخاب فونت</label>
+            <select id="fontFamilySelect" onchange="changeFontFamily(this.value)">
+                <option value="Vazirmatn, sans-serif">وزیر (Vazirmatn)</option>
+                <option value="'Segoe UI', Tahoma, sans-serif">پیش‌فرض سیستم</option>
+            </select>
+        </div>
+        <div class="setting-group">
+            <label id="txtBgm">موزیک پس‌زمینه</label>
+            <select id="bgmSelect" onchange="toggleBgm(this.value)">
+                <option value="off">غیرفعال</option>
+                <option value="on">فعال</option>
+            </select>
+        </div>
+        <div class="setting-group">
+            <label id="txtColorBg">رنگ پس‌زمینه</label>
+            <input type="color" id="bgColorPicker" value="#1f1f1f" onchange="changeContainerColor(this.value)">
+        </div>
+        <div class="setting-group">
+            <label id="txtLanguage">زبان (Language)</label>
+            <select id="langSelect" onchange="changeLanguage(this.value)">
+                <option value="fa">فارسی</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- پاپ‌آپ رمز عبور -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal-card">
+            <i id="modalIcon" class="fa-solid fa-lock" style="font-size: 2rem; color: var(--accent-green);"></i>
+            <h3 id="modalTitle">ورود به بخش محافظت‌شده</h3>
+            <input type="password" id="passInput" placeholder="رمز عبور را وارد کنید" maxlength="10">
+            <div id="modalErrorMsg" style="color:#ef4444; font-size:0.8rem; display:none;">رمز عبور اشتباه است!</div>
+            <div class="modal-btns">
+                <button onclick="submitPassword()" class="modal-btn confirm">تأیید</button>
+                <button onclick="closePasswordModal()" class="modal-btn cancel">انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- موزیک پس‌زمینه -->
+    <audio id="bgMusic" loop>
+        <source src="https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg" type="audio/ogg">
+    </audio>
+
+    <div class="container" id="mainContainer">
+
+        <!-- نوار بالایی گوگل پلی -->
+        <div class="gp-header">
+            <div class="gp-search-bar">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="globalSearch" placeholder="جستجوی برنامه و ابزارها..." onkeyup="filterOptions()">
+                <button class="gp-profile-btn" onclick="toggleSettingsMenu()" title="تنظیمات">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+
+            <!-- تب‌های بالای گوگل پلی -->
+            <div class="gp-tabs" id="mainTabs">
+                <div class="gp-tab active" onclick="switchTab('forYou')">برای شما</div>
+                <div class="gp-tab" onclick="switchTab('topCharts')">برترین‌ها</div>
+                <div class="gp-tab" onclick="switchTab('categories')">دسته‌بندی‌ها</div>
+            </div>
+        </div>
+
+        <!-- TAB 1: برای شما (For You) -->
+        <div id="tabForYou" class="page active">
+            
+            <!-- ردیف پخش زنده تلویزیون (جدید) -->
+            <div class="section-header">
+                <span class="section-title">پخش زنده تلویزیون</span>
+                <span class="section-more" onclick="showPage('liveTvPage')">بیشتر <i class="fa-solid fa-chevron-left"></i></span>
+            </div>
+            <div class="horizontal-scroll">
+                <div class="app-card" onclick="openExternalUrl('https://telewebion.com/live/tv1')">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-name">شبکه یک</div>
+                    <div class="app-meta">پخش زنده</div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://telewebion.com/live/tv2')">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-name">شبکه دو</div>
+                    <div class="app-meta">پخش زنده</div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://telewebion.com/live/tv3')">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-name">شبکه سه</div>
+                    <div class="app-meta">پخش زنده</div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://telewebion.com/live/varzesh')">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-futbol"></i></div>
+                    <div class="app-name">شبکه ورزش</div>
+                    <div class="app-meta">پخش زنده</div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://telewebion.com/live/ifilm')">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-film"></i></div>
+                    <div class="app-name">شبکه آی‌فیلم</div>
+                    <div class="app-meta">پخش زنده</div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://telewebion.com/live/news')">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-newspaper"></i></div>
+                    <div class="app-name">شبکه خبر</div>
+                    <div class="app-meta">پخش زنده</div>
+                </div>
+            </div>
+
+            <!-- ردیف برنامه های ایرانی -->
+            <div class="section-header">
+                <span class="section-title">برنامه‌های ایرانی</span>
+                <span class="section-more" onclick="showPage('iranAppsPage')">بیشتر <i class="fa-solid fa-chevron-left"></i></span>
+            </div>
+            <div class="horizontal-scroll">
+                <div class="app-card" onclick="openExternalUrl('https://my.mtnirancell.ir')">
+                    <div class="app-icon btn-irancell"><i class="fa-solid fa-sim-card"></i></div>
+                    <div class="app-name">ایرانسل من</div>
+                    <div class="app-meta"><span>۴.۵</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://divar.ir')">
+                    <div class="app-icon btn-divar"><i class="fa-solid fa-store"></i></div>
+                    <div class="app-name">دیوار</div>
+                    <div class="app-meta"><span>۴.۸</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://www.digikala.com')">
+                    <div class="app-icon btn-digikala"><i class="fa-solid fa-bag-shopping"></i></div>
+                    <div class="app-name">دیجی‌کالا</div>
+                    <div class="app-meta"><span>۴.۴</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://web.rubika.ir')">
+                    <div class="app-icon btn-rubika"><i class="fa-solid fa-comment-dots"></i></div>
+                    <div class="app-name">روبیکا</div>
+                    <div class="app-meta"><span>۴.۲</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+            </div>
+
+            <!-- ردیف هوش مصنوعی -->
+            <div class="section-header">
+                <span class="section-title">هوش مصنوعی</span>
+                <span class="section-more" onclick="showPage('aiPage')">بیشتر <i class="fa-solid fa-chevron-left"></i></span>
+            </div>
+            <div class="horizontal-scroll">
+                <div class="app-card" onclick="openExternalUrl('https://gemini.google.com')">
+                    <div class="app-icon bg-ai"><i class="fa-solid fa-sparkles"></i></div>
+                    <div class="app-name">گوگل جمینی</div>
+                    <div class="app-meta"><span>۴.۹</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://chatgpt.com')">
+                    <div class="app-icon" style="background:#10a37f;"><i class="fa-solid fa-robot"></i></div>
+                    <div class="app-name">ChatGPT</div>
+                    <div class="app-meta"><span>۴.۹</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+                <div class="app-card" onclick="openExternalUrl('https://claude.ai')">
+                    <div class="app-icon" style="background:#d97706;"><i class="fa-solid fa-brain"></i></div>
+                    <div class="app-name">Claude AI</div>
+                    <div class="app-meta"><span>۴.۷</span> <i class="fa-solid fa-star" style="color:#facc15; font-size:0.6rem;"></i></div>
+                </div>
+            </div>
+
+            <!-- ردیف ابزارهای کاربردی -->
+            <div class="section-header">
+                <span class="section-title">ابزارهای دستیار</span>
+                <span class="section-more" onclick="showPage('toolsPage')">بیشتر <i class="fa-solid fa-chevron-left"></i></span>
+            </div>
+            <div class="horizontal-scroll">
+                <div class="app-card" onclick="showPage('calcPage')">
+                    <div class="app-icon bg-tools"><i class="fa-solid fa-calculator"></i></div>
+                    <div class="app-name">ماشین حساب</div>
+                    <div class="app-meta">ابزار</div>
+                </div>
+                <div class="app-card" onclick="showPage('dateConverterPage')">
+                    <div class="app-icon" style="background:#8b5cf6;"><i class="fa-solid fa-calendar-days"></i></div>
+                    <div class="app-name">مبدل تاریخ</div>
+                    <div class="app-meta">ابزار</div>
+                </div>
+                <div class="app-card" onclick="showPage('photoEditorPage')">
+                    <div class="app-icon" style="background:#ec4899;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                    <div class="app-name">ویرایش عکس</div>
+                    <div class="app-meta">ابزار</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TAB 2: برترین‌ها (Top Charts) -->
+        <div id="tabTopCharts" class="page">
+            <div class="section-header">
+                <span class="section-title">محبوب‌ترین شبکه‌های اجتماعی</span>
+            </div>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.instagram.com')" class="app-item-row">
+                    <div class="app-icon btn-instagram"><i class="fa-brands fa-instagram"></i></div>
+                    <div class="app-item-info">
+                        <div class="title">اینستاگرام</div>
+                        <div class="sub">عکس و ویدیو • محبوب‌ترین</div>
+                    </div>
+                </button>
+                <button onclick="openExternalUrl('https://www.youtube.com')" class="app-item-row">
+                    <div class="app-icon btn-youtube"><i class="fa-brands fa-youtube"></i></div>
+                    <div class="app-item-info">
+                        <div class="title">یوتیوب</div>
+                        <div class="sub">تماشای آنلاین ویدیو</div>
+                    </div>
+                </button>
+                <button onclick="openExternalUrl('https://web.telegram.org')" class="app-item-row">
+                    <div class="app-icon btn-telegram"><i class="fa-brands fa-telegram"></i></div>
+                    <div class="app-item-info">
+                        <div class="title">تلگرام وب</div>
+                        <div class="sub">پیام‌رسان سریع</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 3: دسته‌بندی‌ها (Categories) -->
+        <div id="tabCategories" class="page">
+            <div class="categories-grid">
+                <div class="category-card" onclick="showPage('liveTvPage')">
+                    <i class="fa-solid fa-tv" style="color:#ef4444;"></i>
+                    <div><strong>پخش زنده</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('iranAppsPage')">
+                    <i class="fa-solid fa-flag"></i>
+                    <div><strong>ایرانی</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('foreignAppsPage')">
+                    <i class="fa-solid fa-globe"></i>
+                    <div><strong>خارجی</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('aiPage')">
+                    <i class="fa-solid fa-brain"></i>
+                    <div><strong>هوش مصنوعی</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('googleToolsPage')">
+                    <i class="fa-brands fa-google"></i>
+                    <div><strong>گوگل</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('musicSectionPage')">
+                    <i class="fa-solid fa-music" style="color:#d946ef;"></i>
+                    <div><strong>موزیک</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('paidSectionPage')">
+                    <i class="fa-solid fa-gem" style="color:#f59e0b;"></i>
+                    <div><strong>$ غیر رایگان $</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('funPage')">
+                    <i class="fa-solid fa-gamepad"></i>
+                    <div><strong>سرگرمی</strong></div>
+                </div>
+                <div class="category-card" onclick="showPage('toolsPage')">
+                    <i class="fa-solid fa-toolbox"></i>
+                    <div><strong>ابزارها</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== صفحات فرعی پوشه‌ها ==================== -->
+
+        <!-- صفحه کامل پخش زنده تمامی شبکه های ایرانی (جدید) -->
+        <div id="liveTvPage" class="page">
+            <button onclick="switchTab('forYou')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px; color:#ef4444;"><i class="fa-solid fa-tower-broadcast"></i> پخش زنده شبکه‌های ایرانی</h2>
+            <div class="app-list-vertical">
+                <!-- شبکه‌های سراسری -->
+                <button onclick="openExternalUrl('https://telewebion.com/live/tv1')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه یک سیما</div><div class="sub">پخش زنده سراسری</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/tv2')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه دو سیما</div><div class="sub">پخش زنده سراسری</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/tv3')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه سه سیما</div><div class="sub">پخش زنده ورزش و سرگرمی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/tv4')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه چهار سیما</div><div class="sub">شبکه علم و فرهنگ</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/tv5')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-tv"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه تهران (پنج)</div><div class="sub">پخش زنده استان تهران</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/news')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-newspaper"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه خبر</div><div class="sub">پخش زنده آخرین اخبار</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/varzesh')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-futbol"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه ورزش</div><div class="sub">پخش زنده مسابقات ورزشی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/ifilm')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-film"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه آی‌فیلم (iFilm)</div><div class="sub">فیلم و سریال‌های ایرانی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/nasim')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-face-smile"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه نسیم</div><div class="sub">نشاط و خنده</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/pooya')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-child"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه پویا و نهال</div><div class="sub">کودک و نوجوان</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/namayesh')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-clapperboard"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه نمایش</div><div class="sub">پخش فیلم‌های سینمایی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/mastoora')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-book-quran"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه قرآن</div><div class="sub">برنامه‌های قرآنی و معارفی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/dokhtaran')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه آموزش</div><div class="sub">برنامه‌های آموزشی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/fars')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-leaf"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه سلامت</div><div class="sub">برنامه‌های پزشکی و سلامت</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/ofogh')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-eye"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه افق</div><div class="sub">مستند و برنامه‌های تحلیلی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/mostanad')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-video"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه مستند</div><div class="sub">مستندهای جذاب ایران و جهان</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/omid')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-user-graduate"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه امید</div><div class="sub">ویژه نوجوانان</div></div>
+                </button>
+
+                <!-- شبکه‌های استانی -->
+                <h3 style="margin-top: 15px; margin-bottom: 5px; color:#facc15;">شبکه‌های استانی</h3>
+                <button onclick="openExternalUrl('https://telewebion.com/live/khouzestan')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه خوزستان</div><div class="sub">پخش زنده سیمای خوزستان</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/qazvin')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه قزوین</div><div class="sub">پخش زنده سیمای قزوین</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/esfahan')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه اصفهان</div><div class="sub">پخش زنده سیمای اصفهان</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/fars')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه فارس (شیراز)</div><div class="sub">پخش زنده سیمای فارس</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/khorasan-razavi')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه خراسان رضوی (مشهد)</div><div class="sub">پخش زنده سیمای مشهد</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/tabriz')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه سهند (تبریز)</div><div class="sub">پخش زنده سیمای آذربایجان شرقی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://telewebion.com/live/baranam')" class="app-item-row">
+                    <div class="app-icon bg-tv"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="app-item-info"><div class="title">شبکه باران (گیلان)</div><div class="sub">پخش زنده سیمای گیلان</div></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- پوشه موزیک -->
+        <div id="musicSectionPage" class="page">
+            <button onclick="switchTab('categories')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت به دسته‌بندی</button>
+            <h2 style="margin-bottom: 15px; color:#d946ef;">پخش آنلاین موزیک</h2>
+            <div class="app-list-vertical">
+                <!-- پخش موزیک ایرانی -->
+                <button onclick="openExternalUrl('https://radiojavan.com')" class="app-item-row">
+                    <div class="app-icon" style="background:#e11d48;"><i class="fa-solid fa-compact-disc"></i></div>
+                    <div class="app-item-info"><div class="title">رادیو جوان (Radio Javan)</div><div class="sub">موزیک ایرانی و ریمیکس</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://music-fa.com')" class="app-item-row">
+                    <div class="app-icon" style="background:#0284c7;"><i class="fa-solid fa-music"></i></div>
+                    <div class="app-item-info"><div class="title">موزیکفا</div><div class="sub">دانلود و پخش آنلاین جدیدترین اهنگ‌ها</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://pop-music.ir')" class="app-item-row">
+                    <div class="app-icon" style="background:#10b981;"><i class="fa-solid fa-headphones"></i></div>
+                    <div class="app-item-info"><div class="title">پاپ موزیک</div><div class="sub">آرشیو موزیک‌های ایرانی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://ganja2music.com')" class="app-item-row">
+                    <div class="app-icon" style="background:#f59e0b;"><i class="fa-solid fa-radio"></i></div>
+                    <div class="app-item-info"><div class="title">گنجا ۲ موزیک</div><div class="sub">پخش آنلاین آهنگ و آلبوم</div></div>
+                </button>
+
+                <!-- پخش موزیک خارجی -->
+                <button onclick="openExternalUrl('https://open.spotify.com')" class="app-item-row">
+                    <div class="app-icon" style="background:#1db954; color:#000;"><i class="fa-brands fa-spotify"></i></div>
+                    <div class="app-item-info"><div class="title">اسپاتیفای (Spotify)</div><div class="sub">بزرگترین مرجع موزیک جهان</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://soundcloud.com')" class="app-item-row">
+                    <div class="app-icon" style="background:#ff5500;"><i class="fa-brands fa-soundcloud"></i></div>
+                    <div class="app-item-info"><div class="title">ساندکلاد (SoundCloud)</div><div class="sub">اشتراک و پخش موزیک خارجی</div></div>
+                </button>
+                <button onclick="openExternalUrl('https://music.youtube.com')" class="app-item-row">
+                    <div class="app-icon" style="background:#ff0000;"><i class="fa-solid fa-circle-play"></i></div>
+                    <div class="app-item-info"><div class="title">یوتیوب موزیک (YouTube Music)</div><div class="sub">آرشیو بی‌نهایت موزیک</div></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- پوشه $ غیر رایگان $ -->
+        <div id="paidSectionPage" class="page">
+            <button onclick="switchTab('categories')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت به دسته‌بندی</button>
+            <h2 style="margin-bottom: 15px; color:#f59e0b;">$ بخش ویژه و غیر رایگان $</h2>
+            <div class="app-list-vertical">
+                <button onclick="openPasswordModal('adult')" class="app-item-row">
+                    <div class="app-icon" style="background: linear-gradient(45deg, #9333ea, #ec4899);"><i class="fa-solid fa-fire"></i></div>
+                    <div class="app-item-info"><div class="title">بخش +18</div><div class="sub">محافظت شده با رمز عبور</div></div>
+                </button>
+                <button onclick="openPasswordModal('hacking')" class="app-item-row">
+                    <div class="app-icon" style="background: linear-gradient(45deg, #10b981, #059669);"><i class="fa-solid fa-user-ninja"></i></div>
+                    <div class="app-item-info"><div class="title">هکری و آموزشی</div><div class="sub">آموزش‌های ویژه</div></div>
+                </button>
+                <button onclick="openTelegramBuyLink()" class="app-item-row">
+                    <div class="app-icon" style="background: linear-gradient(45deg, #0284c7, #2563eb);"><i class="fa-paper-plane fa-solid"></i></div>
+                    <div class="app-item-info"><div class="title">خرید گزینه ها</div><div class="sub">ارتباط مستقیم تلگرام</div></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- صفحه هکری و آموزشی -->
+        <div id="hackingPage" class="page">
+            <button onclick="showPage('paidSectionPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px; color:#10b981;">هکری و آموزشی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://t.me/ifarshadh')" class="app-item-row">
+                    <div class="app-icon" style="background:#10b981;"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div class="app-item-info"><div class="title">ورود به کانال آموزشی</div><div class="sub">تلگرام آموزشی</div></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- صفحه برنامه‌های ایرانی -->
+        <div id="iranAppsPage" class="page">
+            <button onclick="switchTab('forYou')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">برنامه‌های ایرانی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://my.mtnirancell.ir')" class="app-item-row"><div class="app-icon btn-irancell"><i class="fa-solid fa-sim-card"></i></div><div class="app-item-info"><div class="title">ایرانسل من</div></div></button>
+                <button onclick="openExternalUrl('https://my.mci.ir')" class="app-item-row"><div class="app-icon btn-hamrahman"><i class="fa-solid fa-mobile-screen-button"></i></div><div class="app-item-info"><div class="title">همراه من</div></div></button>
+                <button onclick="openExternalUrl('https://divar.ir')" class="app-item-row"><div class="app-icon btn-divar"><i class="fa-solid fa-store"></i></div><div class="app-item-info"><div class="title">دیوار</div></div></button>
+                <button onclick="openExternalUrl('https://www.digikala.com')" class="app-item-row"><div class="app-icon btn-digikala"><i class="fa-solid fa-bag-shopping"></i></div><div class="app-item-info"><div class="title">دیجی‌کالا</div></div></button>
+                <button onclick="openExternalUrl('https://web.rubika.ir')" class="app-item-row"><div class="app-icon btn-rubika"><i class="fa-solid fa-comment-dots"></i></div><div class="app-item-info"><div class="title">روبیکا وب</div></div></button>
+                <button onclick="openExternalUrl('https://web.bale.ai')" class="app-item-row"><div class="app-icon btn-bale"><i class="fa-solid fa-paper-plane"></i></div><div class="app-item-info"><div class="title">پیام‌رسان بله</div></div></button>
+                <button onclick="openExternalUrl('https://app.milli.gold')" class="app-item-row"><div class="app-icon btn-milli"><i class="fa-solid fa-coins"></i></div><div class="app-item-info"><div class="title">میلی (طلا)</div></div></button>
+                <button onclick="showPage('iranMoviesPage')" class="app-item-row"><div class="app-icon" style="background:#fdc100; color:#000;"><i class="fa-solid fa-clapperboard"></i></div><div class="app-item-info"><div class="title">فیلم و سریال ایرانی</div></div></button>
+                <button onclick="showPage('banksPage')" class="app-item-row"><div class="app-icon" style="background:#059669;"><i class="fa-solid fa-building-columns"></i></div><div class="app-item-info"><div class="title">بانک‌ها</div></div></button>
+            </div>
+        </div>
+
+        <!-- فیلم و سریال ایرانی -->
+        <div id="iranMoviesPage" class="page">
+            <button onclick="showPage('iranAppsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">فیلم و سریال ایرانی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.filimo.com')" class="app-item-row"><div class="app-icon" style="background:#fdc100; color:#000;"><i class="fa-solid fa-film"></i></div><div class="app-item-info"><div class="title">فیلیمو</div></div></button>
+                <button onclick="openExternalUrl('https://www.namava.ir')" class="app-item-row"><div class="app-icon" style="background:#002b49; color:#00f2fe;"><i class="fa-solid fa-video"></i></div><div class="app-item-info"><div class="title">نماوا</div></div></button>
+                <button onclick="openExternalUrl('https://www.filmnet.ir')" class="app-item-row"><div class="app-icon" style="background:#ff5722;"><i class="fa-solid fa-tv"></i></div><div class="app-item-info"><div class="title">فیلم‌نت</div></div></button>
+                <button onclick="openExternalUrl('https://telewebion.com')" class="app-item-row"><div class="app-icon" style="background:#6366f1;"><i class="fa-solid fa-tower-broadcast"></i></div><div class="app-item-info"><div class="title">تلوبیون</div></div></button>
+            </div>
+        </div>
+
+        <!-- بانک‌ها -->
+        <div id="banksPage" class="page">
+            <button onclick="showPage('iranAppsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">بانک‌ها</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://bmi.ir')" class="app-item-row"><div class="app-icon" style="background:#1d4ed8;"><i class="fa-solid fa-landmark"></i></div><div class="app-item-info"><div class="title">بانک ملی ایران</div></div></button>
+                <button onclick="openExternalUrl('https://bim.ir')" class="app-item-row"><div class="app-icon" style="background:#b91c1c;"><i class="fa-solid fa-landmark"></i></div><div class="app-item-info"><div class="title">بانک ملت</div></div></button>
+                <button onclick="openExternalUrl('https://www.bsi.ir')" class="app-item-row"><div class="app-icon" style="background:#0369a1;"><i class="fa-solid fa-landmark"></i></div><div class="app-item-info"><div class="title">بانک صادرات</div></div></button>
+                <button onclick="openExternalUrl('https://www.bki.ir')" class="app-item-row"><div class="app-icon" style="background:#15803d;"><i class="fa-solid fa-landmark"></i></div><div class="app-item-info"><div class="title">بانک کشاورزی</div></div></button>
+                <button onclick="openExternalUrl('https://tejaratbank.ir')" class="app-item-row"><div class="app-icon" style="background:#0e7490;"><i class="fa-solid fa-landmark"></i></div><div class="app-item-info"><div class="title">بانک تجارت</div></div></button>
+                <button onclick="openExternalUrl('https://www.bpi.ir')" class="app-item-row"><div class="app-icon" style="background:#b45309;"><i class="fa-solid fa-landmark"></i></div><div class="app-item-info"><div class="title">بانک پاسارگاد</div></div></button>
+                <button onclick="openExternalUrl('https://blu.ir')" class="app-item-row"><div class="app-icon" style="background:#0284c7;"><i class="fa-solid fa-credit-card"></i></div><div class="app-item-info"><div class="title">بلوبانک</div></div></button>
+                <button onclick="openExternalUrl('https://hamrahcart.ir')" class="app-item-row"><div class="app-icon" style="background:#4f46e5;"><i class="fa-solid fa-wallet"></i></div><div class="app-item-info"><div class="title">همراه کارت</div></div></button>
+            </div>
+        </div>
+
+        <!-- صفحه برنامه‌های خارجی -->
+        <div id="foreignAppsPage" class="page">
+            <button onclick="switchTab('forYou')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">برنامه‌های خارجی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.instagram.com')" class="app-item-row"><div class="app-icon btn-instagram"><i class="fa-brands fa-instagram"></i></div><div class="app-item-info"><div class="title">اینستاگرام</div></div></button>
+                <button onclick="openExternalUrl('https://www.youtube.com')" class="app-item-row"><div class="app-icon btn-youtube"><i class="fa-brands fa-youtube"></i></div><div class="app-item-info"><div class="title">یوتیوب</div></div></button>
+                <button onclick="openExternalUrl('https://web.telegram.org')" class="app-item-row"><div class="app-icon btn-telegram"><i class="fa-brands fa-telegram"></i></div><div class="app-item-info"><div class="title">تلگرام وب</div></div></button>
+                <button onclick="openExternalUrl('https://www.facebook.com')" class="app-item-row"><div class="app-icon" style="background:#1877f2;"><i class="fa-brands fa-facebook"></i></div><div class="app-item-info"><div class="title">فیسبوک</div></div></button>
+                <button onclick="openExternalUrl('https://web.whatsapp.com')" class="app-item-row"><div class="app-icon" style="background:#25d366;"><i class="fa-brands fa-whatsapp"></i></div><div class="app-item-info"><div class="title">واتساپ وب</div></div></button>
+                <button onclick="openExternalUrl('https://www.pinterest.com')" class="app-item-row"><div class="app-icon" style="background:#e60023;"><i class="fa-brands fa-pinterest"></i></div><div class="app-item-info"><div class="title">پینترست</div></div></button>
+                <button onclick="showPage('foreignMoviesPage')" class="app-item-row"><div class="app-icon" style="background:#dc2626;"><i class="fa-solid fa-film"></i></div><div class="app-item-info"><div class="title">فیلم و سریال خارجی</div></div></button>
+                <button onclick="showPage('virtualWorldPage')" class="app-item-row"><div class="app-icon bg-foreign"><i class="fa-solid fa-globe"></i></div><div class="app-item-info"><div class="title">دنیای مجازی</div></div></button>
+            </div>
+        </div>
+
+        <!-- فیلم و سریال خارجی -->
+        <div id="foreignMoviesPage" class="page">
+            <button onclick="showPage('foreignAppsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">فیلم و سریال خارجی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.netflix.com')" class="app-item-row"><div class="app-icon" style="background:#e50914;"><i class="fa-solid fa-N"></i></div><div class="app-item-info"><div class="title">نتفلیکس</div></div></button>
+                <button onclick="openExternalUrl('https://www.primevideo.com')" class="app-item-row"><div class="app-icon" style="background:#00a8e1; color:#000;"><i class="fa-solid fa-box"></i></div><div class="app-item-info"><div class="title">آمازون پرایم ویدیو</div></div></button>
+                <button onclick="openExternalUrl('https://www.disneyplus.com')" class="app-item-row"><div class="app-icon" style="background:#113ccf;"><i class="fa-solid fa-d"></i></div><div class="app-item-info"><div class="title">دیزنی پلاس</div></div></button>
+                <button onclick="openExternalUrl('https://www.max.com')" class="app-item-row"><div class="app-icon" style="background:#4b0082;"><i class="fa-solid fa-film"></i></div><div class="app-item-info"><div class="title">مکس / اچ‌بی‌او</div></div></button>
+                <button onclick="openExternalUrl('https://www.imdb.com')" class="app-item-row"><div class="app-icon" style="background:#f5c518; color:#000;"><i class="fa-brands fa-imdb"></i></div><div class="app-item-info"><div class="title">IMDb</div></div></button>
+                <button onclick="openExternalUrl('https://tv.apple.com')" class="app-item-row"><div class="app-icon" style="background:#000; border:1px solid #444;"><i class="fa-brands fa-apple"></i></div><div class="app-item-info"><div class="title">اپل تی‌وی پلاس</div></div></button>
+            </div>
+        </div>
+
+        <!-- دنیای مجازی -->
+        <div id="virtualWorldPage" class="page">
+            <button onclick="showPage('foreignAppsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">دنیای مجازی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.tiktok.com')" class="app-item-row"><div class="app-icon" style="background:#000; border:1px solid #444;"><i class="fa-brands fa-tiktok"></i></div><div class="app-item-info"><div class="title">تیک تاک</div></div></button>
+                <button onclick="openExternalUrl('https://twitter.com')" class="app-item-row"><div class="app-icon" style="background:#000; border:1px solid #444;"><i class="fa-brands fa-x-twitter"></i></div><div class="app-item-info"><div class="title">ایکس / توییتر</div></div></button>
+                <button onclick="openExternalUrl('https://discord.com')" class="app-item-row"><div class="app-icon" style="background:#5865F2;"><i class="fa-brands fa-discord"></i></div><div class="app-item-info"><div class="title">دیسکورد</div></div></button>
+                <button onclick="openExternalUrl('https://www.twitch.tv')" class="app-item-row"><div class="app-icon" style="background:#9146FF;"><i class="fa-brands fa-twitch"></i></div><div class="app-item-info"><div class="title">توییچ</div></div></button>
+                <button onclick="openExternalUrl('https://www.reddit.com')" class="app-item-row"><div class="app-icon" style="background:#FF4500;"><i class="fa-brands fa-reddit"></i></div><div class="app-item-info"><div class="title">ردیت</div></div></button>
+                <button onclick="openExternalUrl('https://invite.viber.com')" class="app-item-row"><div class="app-icon" style="background:#7360f2;"><i class="fa-brands fa-viber"></i></div><div class="app-item-info"><div class="title">وایبر</div></div></button>
+            </div>
+        </div>
+
+        <!-- صفحه هوش مصنوعی -->
+        <div id="aiPage" class="page">
+            <button onclick="switchTab('forYou')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">هوش مصنوعی</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://gemini.google.com')" class="app-item-row"><div class="app-icon bg-ai"><i class="fa-solid fa-sparkles"></i></div><div class="app-item-info"><div class="title">گوگل جمینی</div></div></button>
+                <button onclick="openExternalUrl('https://chatgpt.com')" class="app-item-row"><div class="app-icon" style="background:#10a37f;"><i class="fa-solid fa-robot"></i></div><div class="app-item-info"><div class="title">ChatGPT</div></div></button>
+                <button onclick="openExternalUrl('https://claude.ai')" class="app-item-row"><div class="app-icon" style="background:#d97706;"><i class="fa-solid fa-brain"></i></div><div class="app-item-info"><div class="title">Claude AI</div></div></button>
+                <button onclick="openExternalUrl('https://copilot.microsoft.com')" class="app-item-row"><div class="app-icon" style="background:#0078d4;"><i class="fa-solid fa-window-maximize"></i></div><div class="app-item-info"><div class="title">مایکروسافت کوپیلت</div></div></button>
+                <button onclick="openExternalUrl('https://www.perplexity.ai')" class="app-item-row"><div class="app-icon" style="background:#20b8cd; color:#000;"><i class="fa-solid fa-magnifying-glass"></i></div><div class="app-item-info"><div class="title">Perplexity</div></div></button>
+            </div>
+        </div>
+
+        <!-- صفحه ابزارهای گوگل -->
+        <div id="googleToolsPage" class="page">
+            <button onclick="switchTab('categories')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">ابزارهای گوگل</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.google.com')" class="app-item-row"><div class="app-icon" style="background:#4285F4;"><i class="fa-brands fa-google"></i></div><div class="app-item-info"><div class="title">جستجوی گوگل</div></div></button>
+                <button onclick="openExternalUrl('https://maps.google.com')" class="app-item-row"><div class="app-icon" style="background:#34A853;"><i class="fa-solid fa-map-location-dot"></i></div><div class="app-item-info"><div class="title">گوگل مپ</div></div></button>
+                <button onclick="openExternalUrl('https://drive.google.com')" class="app-item-row"><div class="app-icon" style="background:#FBBC05; color:#000;"><i class="fa-solid fa-hard-drive"></i></div><div class="app-item-info"><div class="title">گوگل درایو</div></div></button>
+                <button onclick="openExternalUrl('https://photos.google.com')" class="app-item-row"><div class="app-icon" style="background:#EA4335;"><i class="fa-solid fa-image"></i></div><div class="app-item-info"><div class="title">گوگل فتوز</div></div></button>
+                <button onclick="openExternalUrl('https://mail.google.com')" class="app-item-row"><div class="app-icon" style="background:#D93025;"><i class="fa-solid fa-envelope"></i></div><div class="app-item-info"><div class="title">جی‌میل</div></div></button>
+                <button onclick="openExternalUrl('https://translate.google.com')" class="app-item-row"><div class="app-icon" style="background:#1A73E8;"><i class="fa-solid fa-language"></i></div><div class="app-item-info"><div class="title">گوگل ترنسلیت</div></div></button>
+                <button onclick="openExternalUrl('https://news.google.com')" class="app-item-row"><div class="app-icon" style="background:#5F6368;"><i class="fa-solid fa-newspaper"></i></div><div class="app-item-info"><div class="title">اخبار گوگل</div></div></button>
+            </div>
+        </div>
+
+        <!-- صفحه بخش +18 -->
+        <div id="adultPage" class="page">
+            <button onclick="showPage('paidSectionPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px; color:#ec4899;">بخش +18</h2>
+            <div class="app-list-vertical">
+                <button onclick="openExternalUrl('https://www.pornhub.com')" class="app-item-row"><div class="app-icon btn-pornhub"><i class="fa-solid fa-video"></i></div><div class="app-item-info"><div class="title">Pornhub</div></div></button>
+                <button onclick="openExternalUrl('https://www.xvideos.com')" class="app-item-row"><div class="app-icon btn-xvideos"><i class="fa-solid fa-play"></i></div><div class="app-item-info"><div class="title">XVideos</div></div></button>
+                <button onclick="openExternalUrl('https://www.techtube.cam')" class="app-item-row"><div class="app-icon btn-techtube"><i class="fa-solid fa-tv"></i></div><div class="app-item-info"><div class="title">TechTube</div></div></button>
+                <button onclick="openExternalUrl('https://shahvani.com')" class="app-item-row"><div class="app-icon btn-shahvani"><i class="fa-solid fa-fire"></i></div><div class="app-item-info"><div class="title">شهوانی</div></div></button>
+            </div>
+        </div>
+
+        <!-- صفحه سرگرمی -->
+        <div id="funPage" class="page">
+            <button onclick="switchTab('forYou')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">سرگرمی</h2>
+            <div class="app-list-vertical">
+                <button onclick="startMarioGame()" class="app-item-row">
+                    <div class="app-icon btn-mario"><i class="fa-solid fa-gamepad"></i></div>
+                    <div class="app-item-info"><div class="title">سوپر ماریو (Super Mario)</div><div class="sub">مراحل ۱ تا ۳ با دسته کنترلی</div></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- صفحه بازی ماریو -->
+        <div id="marioGamePage" class="page">
+            <button onclick="stopMarioGame(); showPage('funPage');" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> خروج از بازی</button>
+            <h3 id="marioTitle" style="margin-bottom: 10px;">سوپر ماریو</h3>
+            <div class="mario-container">
+                <div class="mario-hud">
+                    <span>امتیاز: <span id="marioScore">0</span></span>
+                    <span>جان: <span id="marioLives">3</span></span>
+                    <span>مرحله: <span id="marioWorld">1-1</span></span>
+                </div>
+                <canvas id="marioCanvas" width="340" height="220"></canvas>
+                <div class="mario-controls">
+                    <button class="mario-ctrl-btn" onclick="marioMove('RIGHT')"><i class="fa-solid fa-arrow-right"></i></button>
+                    <button class="mario-ctrl-btn" onclick="marioJump()"><i class="fa-solid fa-arrow-up"></i> پرش</button>
+                    <button class="mario-ctrl-btn" onclick="marioMove('LEFT')"><i class="fa-solid fa-arrow-left"></i></button>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحه ابزارها -->
+        <div id="toolsPage" class="page">
+            <button onclick="switchTab('categories')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px;">ابزارها</h2>
+            <div class="app-list-vertical">
+                <button onclick="showPage('calcPage')" class="app-item-row"><div class="app-icon bg-tools"><i class="fa-solid fa-calculator"></i></div><div class="app-item-info"><div class="title">ماشین حساب مهندسی</div></div></button>
+                <button onclick="showPage('dateConverterPage')" class="app-item-row"><div class="app-icon" style="background:#8b5cf6;"><i class="fa-solid fa-calendar-days"></i></div><div class="app-item-info"><div class="title">مبدل تاریخ (شمسی / قمری)</div></div></button>
+                <button onclick="showPage('photoEditorPage')" class="app-item-row"><div class="app-icon" style="background:#ec4899;"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div class="app-item-info"><div class="title">ویرایشگر و افکت‌گذاری عکس</div></div></button>
+                <button onclick="showPage('callerIdPage')" class="app-item-row"><div class="app-icon" style="background:#059669;"><i class="fa-solid fa-address-book"></i></div><div class="app-item-info"><div class="title">پیداکردن نام از روی شماره</div></div></button>
+                <button onclick="showPage('googlePage')" class="app-item-row"><div class="app-icon" style="background:#ea4335;"><i class="fa-brands fa-google"></i></div><div class="app-item-info"><div class="title">جستجوی گوگل</div></div></button>
+                <button onclick="showPage('flashlightPage')" class="app-item-row"><div class="app-icon" style="background:#eab308; color:#000;"><i class="fa-solid fa-flashlight"></i></div><div class="app-item-info"><div class="title">چراغ قوه</div></div></button>
+            </div>
+        </div>
+
+        <!-- ابزار مبدل تاریخ -->
+        <div id="dateConverterPage" class="page">
+            <button onclick="showPage('toolsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px; color:#8b5cf6;">مبدل تاریخ (شمسی ↔ قمری)</h2>
+            <div style="background:#121212; padding:15px; border-radius:16px; border:1px solid #333; display:flex; flex-direction:column; gap:12px;">
+                <label style="font-size:0.85rem; color:var(--text-sub);">نوع تبدیل را انتخاب کنید:</label>
+                <select id="dateConvertMode" class="search-input-box" style="margin-bottom:0;">
+                    <option value="shamsiToGhamari">شمسی به قمری</option>
+                    <option value="ghamariToShamsi">قمری به شمسی</option>
+                </select>
+                <div style="display:flex; gap:8px;">
+                    <input type="number" id="dateYear" class="search-input-box" placeholder="سال (مثال: 1403)" style="margin-bottom:0;">
+                    <input type="number" id="dateMonth" class="search-input-box" placeholder="ماه (1-12)" style="margin-bottom:0;">
+                    <input type="number" id="dateDay" class="search-input-box" placeholder="روز (1-31)" style="margin-bottom:0;">
+                </div>
+                <button onclick="convertDate()" class="app-item-row" style="background:#8b5cf6; justify-content:center; font-weight:bold;">تبدیل تاریخ</button>
+                <div id="dateResult" style="padding:12px; background:#1e1e1e; border-radius:12px; text-align:center; font-weight:bold; color:#facc15; display:none;"></div>
+            </div>
+        </div>
+
+        <!-- ابزار ویرایشگر و افکت عکس -->
+        <div id="photoEditorPage" class="page">
+            <button onclick="showPage('toolsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 15px; color:#ec4899;">ویرایشگر عکس حرفه‌ای</h2>
+            <div class="photo-editor-box">
+                <input type="file" id="imageInput" accept="image/*" style="display:none;" onchange="loadEditorImage(event)">
+                <button onclick="document.getElementById('imageInput').click()" class="app-item-row" style="background:#ec4899; justify-content:center; font-weight:bold;">
+                    <i class="fa-solid fa-upload"></i> انتخاب عکس از گالری
+                </button>
+
+                <div class="preview-canvas-container">
+                    <canvas id="photoCanvas"></canvas>
+                </div>
+
+                <div class="filters-grid">
+                    <button class="filter-btn active" onclick="applyFilter('normal')">عادی</button>
+                    <button class="filter-btn" onclick="applyFilter('cinematic')">سینمایی</button>
+                    <button class="filter-btn" onclick="applyFilter('dark')">دارک</button>
+                    <button class="filter-btn" onclick="applyFilter('bright')">درخشان</button>
+                    <button class="filter-btn" onclick="applyFilter('day')">روز روشن</button>
+                    <button class="filter-btn" onclick="applyFilter('night')">شب سرمه‌ای</button>
+                    <button class="filter-btn" onclick="applyFilter('bw')">سیاه سفید</button>
+                    <button class="filter-btn" onclick="applyFilter('vintage')">نوستالژی</button>
+                    <button class="filter-btn" onclick="applyFilter('warm')">گرم</button>
+                </div>
+
+                <button onclick="downloadEditedImage()" class="app-item-row" style="background:var(--accent-green); justify-content:center; font-weight:bold;">
+                    <i class="fa-solid fa-download"></i> ذخیره عکس ادیت شده
+                </button>
+            </div>
+        </div>
+
+        <!-- ابزار شماره یاب -->
+        <div id="callerIdPage" class="page">
+            <button onclick="showPage('toolsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 10px;">شماره یاب</h2>
+            <input type="text" id="phoneInput" class="search-input-box" placeholder="مثال: 09123456789">
+            <button onclick="lookupPhoneNumber()" class="app-item-row" style="background:var(--accent-green); justify-content:center; font-weight:bold;">استعلام شماره</button>
+            <div id="lookupResult" style="margin-top: 15px; padding: 15px; background: #121212; border-radius: 12px; font-size: 0.9rem; color: #38bdf8; text-align: center; display: none;"></div>
+        </div>
+
+        <!-- چراغ قوه -->
+        <div id="flashlightPage" class="page">
+            <button onclick="turnOffFlashlight(); showPage('toolsPage');" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 10px;">چراغ قوه</h2>
+            <div class="flashlight-screen">
+                <i id="flashlightIcon" class="fa-solid fa-lightbulb flashlight-icon"></i>
+                <button id="flashlightToggleBtn" onclick="toggleFlashlight()" class="app-item-row" style="background:#eab308; color:#000; justify-content:center; font-weight:bold; max-width:200px;">روشن کردن</button>
+            </div>
+        </div>
+
+        <!-- ماشین حساب -->
+        <div id="calcPage" class="page">
+            <button onclick="showPage('toolsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 10px;">ماشین حساب</h2>
+            <input type="text" id="calcDisplay" class="calc-display" readonly value="0">
+            <div class="calc-grid">
+                <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                <button class="calc-btn sci" onclick="pressCalc('Math.sqrt(')">√</button>
+                <button class="calc-btn sci" onclick="pressCalc('**')">x^y</button>
+                <button class="calc-btn op" onclick="pressCalc('/')">÷</button>
+                <button class="calc-btn" onclick="pressCalc('7')">7</button>
+                <button class="calc-btn" onclick="pressCalc('8')">8</button>
+                <button class="calc-btn" onclick="pressCalc('9')">9</button>
+                <button class="calc-btn op" onclick="pressCalc('*')">×</button>
+                <button class="calc-btn" onclick="pressCalc('4')">4</button>
+                <button class="calc-btn" onclick="pressCalc('5')">5</button>
+                <button class="calc-btn" onclick="pressCalc('6')">6</button>
+                <button class="calc-btn op" onclick="pressCalc('-')">-</button>
+                <button class="calc-btn" onclick="pressCalc('1')">1</button>
+                <button class="calc-btn" onclick="pressCalc('2')">2</button>
+                <button class="calc-btn" onclick="pressCalc('3')">3</button>
+                <button class="calc-btn op" onclick="pressCalc('+')">+</button>
+                <button class="calc-btn" onclick="pressCalc('0')">0</button>
+                <button class="calc-btn" onclick="pressCalc('.')">.</button>
+                <button class="calc-btn sci" onclick="pressCalc(')')">)</button>
+                <button class="calc-btn eq" onclick="calcResult()">=</button>
+            </div>
+        </div>
+
+        <!-- صفحه گوگل -->
+        <div id="googlePage" class="page">
+            <button onclick="showPage('toolsPage')" class="btn-back-gp"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
+            <h2 style="margin-bottom: 10px;">جستجوی گوگل</h2>
+            <input type="text" id="googleQuery" class="search-input-box" placeholder="عبارت مورد نظر را بنویسید...">
+            <button onclick="searchGoogle()" class="app-item-row" style="background:#4285F4; justify-content:center; font-weight:bold;">جستجو در گوگل</button>
+        </div>
+
+    </div>
+
+    <script>
+        // لودینگ هوشمند و نمایش پیام "لطفا صبر کنید..."
+        function showGlobalLoading(callback) {
+            const loading = document.getElementById("globalLoading");
+            loading.classList.add("active");
+            setTimeout(() => {
+                loading.classList.remove("active");
+                if(callback) callback();
+            }, 600);
+        }
+
+        // مدیریت تب‌های بالا
+        function switchTab(tabName) {
+            showGlobalLoading(() => {
+                document.querySelectorAll('.gp-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+                if (tabName === 'forYou') {
+                    document.querySelectorAll('.gp-tab')[0].classList.add('active');
+                    document.getElementById('tabForYou').classList.add('active');
+                } else if (tabName === 'topCharts') {
+                    document.querySelectorAll('.gp-tab')[1].classList.add('active');
+                    document.getElementById('tabTopCharts').classList.add('active');
+                } else if (tabName === 'categories') {
+                    document.querySelectorAll('.gp-tab')[2].classList.add('active');
+                    document.getElementById('tabCategories').classList.add('active');
+                }
+                document.getElementById('mainTabs').style.display = 'flex';
+            });
+        }
+
+        function showPage(pageId) {
+            showGlobalLoading(() => {
+                stopMarioGame();
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                document.getElementById(pageId).classList.add('active');
+                
+                // مخفی کردن تب‌های اصلی هنگام رفتن به صفحات داخلی
+                if(['tabForYou', 'tabTopCharts', 'tabCategories'].includes(pageId)) {
+                    document.getElementById('mainTabs').style.display = 'flex';
+                } else {
+                    document.getElementById('mainTabs').style.display = 'none';
+                }
+            });
+        }
+
+        // سیستم رمز عبور
+        let activeTargetSection = '';
+        function openPasswordModal(targetSection) {
+            activeTargetSection = targetSection;
+            const modal = document.getElementById("passwordModal");
+            document.getElementById("passInput").value = "";
+            document.getElementById("modalErrorMsg").style.display = "none";
+            modal.classList.add("active");
+            document.getElementById("passInput").focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById("passwordModal").classList.remove("active");
+        }
+
+        function submitPassword() {
+            const input = document.getElementById("passInput");
+            if (input.value === "1398") {
+                closePasswordModal();
+                if (activeTargetSection === 'adult') showPage('adultPage');
+                else if (activeTargetSection === 'hacking') showPage('hackingPage');
+            } else {
+                document.getElementById("modalErrorMsg").style.display = "block";
+            }
+        }
+
+        function openTelegramBuyLink() {
+            showGlobalLoading(() => {
+                window.location.href = "tg://resolve?domain=ifarshadh";
+                setTimeout(() => window.open("https://t.me/ifarshadh", "_blank"), 500);
+            });
+        }
+
+        function openExternalUrl(url) {
+            showGlobalLoading(() => {
+                window.open(url, '_blank');
+            });
+        }
+
+        function toggleSettingsMenu() {
+            document.getElementById("settingsDrawer").classList.toggle("open");
+        }
+
+        function changeFontSize(val) {
+            document.documentElement.style.setProperty('--font-size', val + 'px');
+        }
+
+        function changeFontFamily(font) {
+            document.documentElement.style.setProperty('--font-family', font);
+        }
+
+        function toggleBgm(status) {
+            const audio = document.getElementById("bgMusic");
+            if (status === "on") audio.play().catch(e => console.log("Audio policy blocked"));
+            else audio.pause();
+        }
+
+        function changeContainerColor(color) {
+            document.documentElement.style.setProperty('--panel-bg', color);
+            document.documentElement.style.setProperty('--bg-color', color);
+        }
+
+        function changeLanguage(lang) {
+            document.documentElement.setAttribute('dir', lang === 'fa' ? 'rtl' : 'ltr');
+        }
+
+        // سیستم جستجوی سریع
+        function filterOptions() {
+            const query = document.getElementById("globalSearch").value.toLowerCase().trim();
+            const items = document.querySelectorAll(".app-card, .app-item-row");
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    item.style.display = "flex";
+                } else {
+                    item.style.display = "none";
+                }
+            });
+        }
+
+        // ابزار استعلام شماره
+        function lookupPhoneNumber() {
+            const phone = document.getElementById("phoneInput").value.trim();
+            const resultBox = document.getElementById("lookupResult");
+            if (!phone) return;
+
+            const mockDatabase = {
+                "09123456789": "ارتباط یافت شد: فرشاد (مدیر سیستم)",
+                "09351234567": "ارتباط یافت شد: علی رضایی",
+                "09198765432": "ارتباط یافت شد: شرکت خدماتی هاب"
+            };
+
+            resultBox.style.display = "block";
+            resultBox.innerHTML = mockDatabase[phone] || "اطلاعاتی در مخزن یافت نشد.";
+        }
+
+        // سیستم چراغ قوه
+        let isFlashOn = false;
+        function toggleFlashlight() {
+            isFlashOn = !isFlashOn;
+            const icon = document.getElementById("flashlightIcon");
+            const btn = document.getElementById("flashlightToggleBtn");
+            if (isFlashOn) {
+                icon.classList.add("on");
+                btn.innerText = "خاموش کردن";
+                document.body.style.backgroundColor = "#ffffff";
+            } else {
+                turnOffFlashlight();
+            }
+        }
+        function turnOffFlashlight() {
+            isFlashOn = false;
+            document.getElementById("flashlightIcon").classList.remove("on");
+            document.getElementById("flashlightToggleBtn").innerText = "روشن کردن";
+            document.body.style.backgroundColor = "var(--bg-color)";
+        }
+
+        // ماشین حساب
+        let calcVal = "";
+        function pressCalc(val) {
+            if (calcVal === "0" && val !== ".") calcVal = "";
+            calcVal += val;
+            document.getElementById("calcDisplay").value = calcVal;
+        }
+
+        function clearCalc() {
+            calcVal = "";
+            document.getElementById("calcDisplay").value = "0";
+        }
+
+        function calcResult() {
+            try {
+                let evaluated = Function('"use strict";return (' + calcVal + ')')();
+                calcVal = evaluated.toString();
+                document.getElementById("calcDisplay").value = calcVal;
+            } catch (e) {
+                document.getElementById("calcDisplay").value = "خطا";
+                calcVal = "";
+            }
+        }
+
+        function searchGoogle() {
+            const q = document.getElementById("googleQuery").value.trim();
+            if (q) window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
+        }
+
+        // --- ابزار: مبدل تاریخ (شمسی / قمری) ---
+        function convertDate() {
+            const mode = document.getElementById("dateConvertMode").value;
+            const y = parseInt(document.getElementById("dateYear").value);
+            const m = parseInt(document.getElementById("dateMonth").value);
+            const d = parseInt(document.getElementById("dateDay").value);
+            const resBox = document.getElementById("dateResult");
+
+            if (!y || !m || !d) {
+                alert("لطفاً تمامی مقادیر سال، ماه و روز را وارد کنید.");
+                return;
+            }
+
+            resBox.style.display = "block";
+            if (mode === "shamsiToGhamari") {
+                let totalDays = (y - 1) * 365.2422 + (m - 1) * 30.4 + d;
+                let qamariYear = Math.floor(1 + totalDays / 354.367);
+                let remDays = totalDays % 354.367;
+                let qamariMonth = Math.floor(1 + remDays / 29.53);
+                let qamariDay = Math.floor(1 + (remDays % 29.53));
+                
+                resBox.innerText = `تاریخ قمری: ${qamariYear}/${qamariMonth}/${qamariDay}`;
+            } else {
+                let totalDays = (y - 1) * 354.367 + (m - 1) * 29.53 + d;
+                let shamsiYear = Math.floor(1 + totalDays / 365.2422);
+                let remDays = totalDays % 365.2422;
+                let shamsiMonth = Math.floor(1 + remDays / 30.4);
+                let shamsiDay = Math.floor(1 + (remDays % 30.4));
+
+                resBox.innerText = `تاریخ شمسی: ${shamsiYear}/${shamsiMonth}/${shamsiDay}`;
+            }
+        }
+
+        // --- ابزار: ویرایشگر و افکت عکس ---
+        let currentLoadedImg = null;
+        let currentFilter = 'normal';
+
+        function loadEditorImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    currentLoadedImg = img;
+                    renderPhotoCanvas();
+                }
+                img.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function applyFilter(filterType) {
+            currentFilter = filterType;
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            if(event && event.target) event.target.classList.add('active');
+            renderPhotoCanvas();
+        }
+
+        function renderPhotoCanvas() {
+            const canvas = document.getElementById("photoCanvas");
+            const ctx = canvas.getContext("2d");
+
+            if (!currentLoadedImg) {
+                canvas.width = 300; canvas.height = 150;
+                ctx.fillStyle = "#222"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#777"; ctx.font = "14px Vazirmatn";
+                ctx.textAlign = "center";
+                ctx.fillText("عکس انتخابی اینجا قرار می‌گیرد", canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            canvas.width = currentLoadedImg.width;
+            canvas.height = currentLoadedImg.height;
+
+            ctx.filter = "none";
+            if (currentFilter === 'cinematic') ctx.filter = "contrast(125%) brightness(90%) saturate(110%) sepia(15%)";
+            else if (currentFilter === 'dark') ctx.filter = "brightness(65%) contrast(140%)";
+            else if (currentFilter === 'bright') ctx.filter = "brightness(130%) contrast(110%)";
+            else if (currentFilter === 'day') ctx.filter = "saturate(140%) brightness(115%)";
+            else if (currentFilter === 'night') ctx.filter = "hue-rotate(180deg) brightness(80%) contrast(120%)";
+            else if (currentFilter === 'bw') ctx.filter = "grayscale(100%) contrast(120%)";
+            else if (currentFilter === 'vintage') ctx.filter = "sepia(60%) contrast(90%) brightness(95%)";
+            else if (currentFilter === 'warm') ctx.filter = "sepia(35%) saturate(130%) brightness(105%)";
+
+            ctx.drawImage(currentLoadedImg, 0, 0);
+        }
+
+        function downloadEditedImage() {
+            if (!currentLoadedImg) {
+                alert("لطفاً ابتدا یک عکس انتخاب کنید.");
+                return;
+            }
+            const canvas = document.getElementById("photoCanvas");
+            const link = document.createElement('a');
+            link.download = 'GBApp_Edited_Photo.png';
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+        }
+
+        // اجرای اولیه بوم عکس
+        window.addEventListener('DOMContentLoaded', () => { renderPhotoCanvas(); });
+
+        /* --- بازی سوپر ماریو --- */
+        let marioInterval = null;
+        const mCanvas = document.getElementById("marioCanvas");
+        const mCtx = mCanvas.getContext("2d");
+
+        let mGame = { score: 0, lives: 3, world: 1, stage: 1, cameraX: 0, isOver: false };
+        let mario = { x: 40, y: 140, w: 16, h: 20, dx: 0, dy: 0, speed: 2.2, jumpPower: -8.5, grounded: false };
+        let mObjects = [], enemies = [];
+
+        function startMarioGame() {
+            showPage('marioGamePage');
+            mGame = { score: 0, lives: 3, world: 1, stage: 1, cameraX: 0, isOver: false };
+            loadStage(1, 1);
+            if (marioInterval) clearInterval(marioInterval);
+            marioInterval = setInterval(marioLoop, 30);
+        }
+
+        function stopMarioGame() {
+            if (marioInterval) { clearInterval(marioInterval); marioInterval = null; }
+        }
+
+        function loadStage(w, s) {
+            mGame.world = w; mGame.stage = s;
+            document.getElementById("marioWorld").innerText = `${w}-${s}`;
+            mario.x = 40; mario.y = 130; mario.dx = 0; mario.dy = 0; mGame.cameraX = 0;
+            mObjects = []; enemies = [];
+
+            if (s === 1) {
+                mObjects.push({x: 180, y: 110, w: 24, h: 16, type: 'block'}, {x: 210, y: 110, w: 24, h: 16, type: 'brick'}, {x: 320, y: 130, w: 25, h: 30, type: 'pipe'});
+                enemies.push({x: 250, y: 144, w: 16, h: 16, dx: -0.8, alive: true});
+            } else if (s === 2) {
+                mObjects.push({x: 120, y: 120, w: 40, h: 12, type: 'platform'}, {x: 300, y: 120, w: 25, h: 40, type: 'pipe'});
+                enemies.push({x: 210, y: 79, w: 16, h: 16, dx: -1, alive: true});
+            } else if (s === 3) {
+                mObjects.push({x: 100, y: 135, w: 60, h: 10, type: 'platform'}, {x: 270, y: 95, w: 60, h: 10, type: 'platform'});
+                enemies.push({x: 200, y: 99, w: 16, h: 16, dx: -1.2, alive: true});
+            }
+        }
+
+        function marioMove(dir) {
+            if (dir === 'RIGHT') mario.dx = mario.speed;
+            if (dir === 'LEFT') mario.dx = -mario.speed;
+            setTimeout(() => { mario.dx = 0; }, 200);
+        }
+
+        function marioJump() {
+            if (mario.grounded) { mario.dy = mario.jumpPower; mario.grounded = false; }
+        }
+
+        function marioLoop() {
+            if (mGame.isOver) return;
+            mario.dy += 0.45; mario.y += mario.dy; mario.x += mario.dx;
+            if (mario.x - mGame.cameraX > 200) mGame.cameraX = mario.x - 200;
+
+            if (mario.y >= 160) { mario.y = 160; mario.dy = 0; mario.grounded = true; }
+
+            mObjects.forEach(obj => {
+                if (mario.x + mario.w > obj.x && mario.x < obj.x + obj.w && mario.y + mario.h > obj.y && mario.y < obj.y + obj.h) {
+                    if (mario.dy > 0 && mario.y + mario.h - mario.dy <= obj.y + 6) { mario.y = obj.y - mario.h; mario.dy = 0; mario.grounded = true; }
+                }
+            });
+
+            enemies.forEach(en => {
+                if (!en.alive) return;
+                en.x += en.dx;
+                if (mario.x + mario.w > en.x && mario.x < en.x + en.w && mario.y + mario.h > en.y && mario.y < en.y + en.h) {
+                    if (mario.dy > 0 && mario.y + mario.h - mario.dy <= en.y + 8) {
+                        en.alive = false; mGame.score += 100;
+                        document.getElementById("marioScore").innerText = mGame.score;
+                        mario.dy = -4;
+                    } else { marioLoseLife(); }
+                }
+            });
+
+            if (mario.x > 600) {
+                if (mGame.stage < 3) loadStage(1, mGame.stage + 1);
+                else { alert("تبریک! شما همه مراحل را تمام کردید!"); startMarioGame(); }
+            }
+            drawMarioScene();
+        }
+
+        function marioLoseLife() {
+            mGame.lives--;
+            document.getElementById("marioLives").innerText = mGame.lives;
+            if (mGame.lives <= 0) { alert("Game Over!"); startMarioGame(); }
+            else { mario.x = 40; mario.y = 130; mario.dx = 0; mario.dy = 0; mGame.cameraX = 0; }
+        }
+
+        function drawMarioScene() {
+            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+            mCtx.save();
+            mCtx.translate(-mGame.cameraX, 0);
+
+            mCtx.fillStyle = "#d88000"; mCtx.fillRect(0, 176, 800, 44);
+            mCtx.fillStyle = "#00a800"; mCtx.fillRect(0, 176, 800, 8);
+
+            mObjects.forEach(obj => {
+                mCtx.fillStyle = obj.type === 'pipe' ? "#00a800" : "#b84400";
+                mCtx.fillRect(obj.x, obj.y, obj.w, obj.h);
+            });
+
+            enemies.forEach(en => {
+                if (!en.alive) return;
+                mCtx.fillStyle = "#8b4513";
+                mCtx.fillRect(en.x, en.y, en.w, en.h);
+            });
+
+            mCtx.fillStyle = "#e52521";
+            mCtx.fillRect(mario.x, mario.y, mario.w, mario.h);
+            mCtx.restore();
+        }
+    </script>
+</body>
+</html>
